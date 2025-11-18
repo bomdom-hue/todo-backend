@@ -110,44 +110,6 @@ app.put('/tasks/:id', async (req, res) => {
   }
 });
 
-// TEMP DIAGNOSTIC ROUTES — add above app.listen(...)
-app.get('/db-info', async (req, res) => {
-  try {
-    // Query information_schema for column type
-    const q = `
-      SELECT column_name, data_type, character_maximum_length
-      FROM information_schema.columns
-      WHERE table_name = 'tasks' AND column_name = 'task';
-    `;
-    const info = await pool.query(q);
-
-    // Mask DATABASE_URL a little for safety when printing
-    const dbUrl = process.env.DATABASE_URL || 'not-set';
-    const masked = dbUrl.length > 30
-      ? dbUrl.slice(0, 15) + '...' + dbUrl.slice(-10)
-      : dbUrl;
-
-    res.json({
-      db: masked,
-      columnInfo: info.rows[0] || null
-    });
-  } catch (err) {
-    console.error('/db-info error', err);
-    res.status(500).json({ error: 'failed to fetch db info' });
-  }
-});
-
-app.get('/fix-task-column', async (req, res) => {
-  try {
-    // run the ALTER — safe to run repeatedly
-    await pool.query(`ALTER TABLE tasks ALTER COLUMN task TYPE TEXT;`);
-    res.send("Task column changed to TEXT (or already TEXT).");
-  } catch (err) {
-    console.error('/fix-task-column error', err);
-    res.status(500).send("Failed to update column: " + (err.message || err));
-  }
-});
-
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
