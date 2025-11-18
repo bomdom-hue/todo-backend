@@ -110,13 +110,16 @@ app.put('/tasks/:id', async (req, res) => {
   }
 });
 
+// ================================
+// TEMP ROUTE TO FIX THE COLUMN
+// ================================
 app.get('/fix-task-column', async (req, res) => {
   try {
     await pool.query(`
       ALTER TABLE tasks 
       ALTER COLUMN task TYPE TEXT;
     `);
-    res.send("Task column updated to TEXT successfully!");
+    res.send("Task column changed to TEXT successfully!");
   } catch (err) {
     console.error(err);
     res.status(500).send("Failed to update column");
