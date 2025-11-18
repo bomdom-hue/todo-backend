@@ -14,10 +14,19 @@ const pool = new Pool({
     : false,
 });
 
-app.use(cors());
+// ✨ FIX CORS - Allow your Netlify domain
+app.use(cors({
+  origin: [
+    'https://deft-sfogliatella-e217fb.netlify.app',  // Your Netlify URL
+    'http://localhost:5500',  // For local testing
+    'http://127.0.0.1:5500'   // For local testing
+  ],
+  credentials: true
+}));
+
 app.use(express.json());
 
-// ✨ ADD THIS FUNCTION - Auto-create table on startup
+// Database initialization
 async function initDatabase() {
   try {
     await pool.query(`
@@ -35,10 +44,9 @@ async function initDatabase() {
   }
 }
 
-// Call it before routes
 initDatabase();
 
-// Your existing routes below...
+// Your routes...
 app.get('/tasks', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM tasks ORDER BY id DESC');
