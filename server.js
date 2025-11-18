@@ -17,9 +17,28 @@ const pool = new Pool({
 app.use(cors());
 app.use(express.json());
 
-// REMOVE STATIC FILE SERVING
-// REMOVE app.get('/')
+// ✨ ADD THIS FUNCTION - Auto-create table on startup
+async function initDatabase() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS tasks (
+        id SERIAL PRIMARY KEY,
+        task VARCHAR(255) NOT NULL,
+        due_date DATE,
+        completed BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('✅ Database table ready!');
+  } catch (err) {
+    console.error('❌ Database init error:', err);
+  }
+}
 
+// Call it before routes
+initDatabase();
+
+// Your existing routes below...
 app.get('/tasks', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM tasks ORDER BY id DESC');
