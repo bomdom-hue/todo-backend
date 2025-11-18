@@ -17,7 +17,7 @@ const pool = new Pool({
 // ✨ FIX CORS - Allow your Netlify domain
 app.use(cors({
   origin: [
-    'https://deft-sfogliatella-e217fb.netlify.app',  // Your Netlify URL
+    'https://todolist-fun.netlify.app/',  // Your Netlify URL
     'http://localhost:5500',  // For local testing
     'http://127.0.0.1:5500'   // For local testing
   ],
