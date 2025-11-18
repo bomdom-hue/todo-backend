@@ -33,7 +33,7 @@ async function initDatabase() {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS tasks (
         id SERIAL PRIMARY KEY,
-        task VARCHAR(255) NOT NULL,
+        task TEXT NOT NULL,
         due_date DATE,
         completed BOOLEAN DEFAULT false,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -109,6 +109,20 @@ app.put('/tasks/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to update task' });
   }
 });
+
+app.get('/fix-task-column', async (req, res) => {
+  try {
+    await pool.query(`
+      ALTER TABLE tasks 
+      ALTER COLUMN task TYPE TEXT;
+    `);
+    res.send("Task column updated to TEXT successfully!");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to update column");
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
